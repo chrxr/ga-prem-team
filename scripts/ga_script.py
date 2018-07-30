@@ -74,7 +74,7 @@ class Team:
             self.cost += self.full_team[i]["cost"]
             self.score += self.full_team[i]["score"]
         if self.cost > 100:
-            self.value = self.score - (self.cost-100)*100
+            self.value = self.score - (self.cost-100)*125
         else:
             self.value = self.score
 
@@ -234,19 +234,19 @@ for i in range(1000):
     population.kill()
 
     if population.teams[-1].value > top_score:
-        top_score = population.teams[-1].value
-        top_team = population.teams[-1]
+        top_score = copy.deepcopy(population.teams[-1].value)
+        top_team = copy.deepcopy(population.teams[-1])
         print(top_score)
 
-print(top_score)
+print("Score: " + str(top_score))
 print(top_team.cost)
 
 for player in top_team.goalkeepers:
-    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
+    print(player["name"] + ', ' + str(player["cost"]) + ', ' + str(player["score"]))
 for player in top_team.defenders:
-    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
+    print(player["name"] + ', ' + str(player["cost"]) + ', ' + str(player["score"]))
 for player in top_team.midfielders:
-    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
+    print(player["name"] + ', ' + str(player["cost"]) + ', ' + str(player["score"]))
 for player in top_team.forwards:
-    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
+    print(player["name"] + ', ' + str(player["cost"]) + ', ' + str(player["score"]))
 
