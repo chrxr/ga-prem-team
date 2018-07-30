@@ -157,7 +157,7 @@ class Population:
         mutate_index = random_numbers(len(self.teams), round(len(self.teams)*self.mut_rate))
         for i in mutate_index:
             check_for_dupes(self.teams[i])
-            seed = random.sample(range(1,15), 1)
+            seed = random.randrange(1,15)
             if seed < 3:
                 x = random.randrange(0, len(all_players[0]))
                 random_goalie = all_players[0][x].copy()
