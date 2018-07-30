@@ -74,7 +74,7 @@ class Team:
             self.cost += self.full_team[i]["cost"]
             self.score += self.full_team[i]["score"]
         if self.cost > 100:
-            self.value = self.score - (self.cost-100)*50
+            self.value = self.score - (self.cost-100)*100
         else:
             self.value = self.score
 
@@ -222,7 +222,7 @@ def random_numbers(num_range, amount):
 
 all_players = read_files()
 
-population = Population(5000)
+population = Population(1000)
 generation = 0
 top_score = 0
 
@@ -239,13 +239,14 @@ for i in range(1000):
         print(top_score)
 
 print(top_score)
+print(top_team.cost)
 
 for player in top_team.goalkeepers:
-    print(player["name"])
+    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
 for player in top_team.defenders:
-    print(player["name"])
+    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
 for player in top_team.midfielders:
-    print(player["name"])
+    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
 for player in top_team.forwards:
-    print(player["name"])
+    print(player["name"] + ' ' + str(player["cost"]) + ' ' + str(player["score"]))
 
