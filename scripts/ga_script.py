@@ -12,10 +12,6 @@ def dedupe(seed,num_players, player_amount):
         dedupe(seed, num_players, player_amount)
     return seed
 
-def check_for_dupes(team):
-    if len(set(team.goal_ids)) < 2:
-        print("broke when checking")
-
 def get_players(all_players, index, player_amount):
     players = []
     player_ids = []
@@ -113,14 +109,9 @@ class Population:
         
             if self.teams[i].goalkeepers[goalie_index[0]]["id"] not in self.teams[i-1].goal_ids and self.teams[i-1].goalkeepers[goalie_index[0]]["id"] not in self.teams[i].goal_ids:
                 swap = copy.deepcopy(self.teams[i].goalkeepers[goalie_index[0]])
-                next_original = self.teams[i].goal_ids
-                original = self.teams[i-1].goal_ids
                 self.teams[i].goalkeepers[goalie_index[0]] = self.teams[i-1].goalkeepers[goalie_index[0]]
                 self.teams[i-1].goalkeepers[goalie_index[0]] = swap
                 self.teams[i].update_ids()
-                if len(set(self.teams[i].goal_ids)) < 2:
-                    print("Gotcha!")
-                    sys.exit()
             
             for x in def_index:
                 if self.teams[i].defenders[x]["id"] not in self.teams[i-1].def_ids and self.teams[i-1].defenders[x]["id"] not in self.teams[i].def_ids:
@@ -142,6 +133,7 @@ class Population:
 
             self.teams[i].full_team = self.teams[i].goalkeepers + self.teams[i].defenders + self.teams[i].midfielders + self.teams[i].forwards
             self.teams[i-1].full_team = self.teams[i-1].goalkeepers + self.teams[i-1].defenders + self.teams[i-1].midfielders + self.teams[i-1].forwards
+            
             self.teams[i].get_cost_value_score()
             self.teams[i-1].get_cost_value_score()
 
@@ -156,7 +148,6 @@ class Population:
     def mutate(self, all_players):
         mutate_index = random_numbers(len(self.teams), round(len(self.teams)*self.mut_rate))
         for i in mutate_index:
-            check_for_dupes(self.teams[i])
             seed = random.randrange(1,15)
             if seed < 3:
                 x = random.randrange(0, len(all_players[0]))
@@ -186,6 +177,7 @@ class Population:
                 if int(random_for["id"]) not in self.teams[i].for_ids:
                     self.teams[i].forwards[for_index[0]] = random_for
 
+            self.teams[i].get_cost_value_score()
             self.teams[i].update_ids()
 
             
@@ -239,7 +231,7 @@ for i in range(1000):
         print(top_score)
 
 print("Score: " + str(top_score))
-print(top_team.cost)
+print("Cost: " + str(top_team.cost))
 
 for player in top_team.goalkeepers:
     print(player["name"] + ', ' + str(player["cost"]) + ', ' + str(player["score"]))
