@@ -1,4 +1,4 @@
-#!/Users/chrisrogers/fantasy_stats/bin/python3
+#!/usr/bin/env python
 
 import csv
 import random
