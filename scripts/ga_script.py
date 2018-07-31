@@ -5,23 +5,22 @@ import random
 import copy
 import sys
 
-def dedupe(seed,num_players, player_amount):
-    seed = set(seed)
-    if len(seed) < player_amount:
-        seed = random.sample(range(num_players), player_amount)
-        dedupe(seed, num_players, player_amount)
-    return seed
+def random_numbers(num_range, amount):
+    numbers = random.sample(range(num_range), amount)
+    to_set = set(numbers)
+    if len(to_set) < len(numbers):
+        random_numbers(amount, range)
+    return numbers
 
 def get_players(all_players, index, player_amount):
     players = []
     player_ids = []
     num_players = len(all_players[index])
-    seed = random.sample(range(num_players), player_amount)
-    seed = dedupe(seed, num_players, player_amount)
+    seed = random_numbers(num_players, player_amount)
     for num in seed:
         players.append(copy.deepcopy(all_players[index][num]))
         player_ids.append(players[-1]["id"])
-    return [sorted(players, key=lambda k: k["id"]), player_ids]
+    return [players, player_ids]
 
 class Team:
     def __init__(self):
@@ -37,15 +36,13 @@ class Team:
         self.score = 0
         self.value = 0
         self.full_team = []
-        self.generation = 0
 
-    def create_team(self, all_players, generation):
+    def create_team(self, all_players):
         self.goalkeepers, self.goal_ids = get_players(all_players, 0, 2)
         self.defenders, self.def_ids = get_players(all_players, 1, 5)
         self.midfielders, self.mid_ids = get_players(all_players, 2, 5)
         self.forwards, self.for_ids = get_players(all_players, 3, 3)
         self.full_team = self.goalkeepers + self.defenders + self.midfielders + self.forwards
-        self.generation = generation
 
     def update_ids(self):
         self.goal_ids = []
@@ -83,18 +80,18 @@ class Population:
         self.min_size = 0.5
 
 
-    def fill_population(self, all_players, generation):
+    def fill_population(self, all_players):
 
         if len(self.teams) < (self.size*self.min_size) and len(self.teams) > 0:
             for i in range(self.size-len(self.teams)):
                 team = Team()
-                team.create_team(all_players, generation)
+                team.create_team(all_players)
                 team.get_cost_value_score()
                 self.teams.append(team)
         elif len(self.teams) < 1:
             for i in range(self.size):
                 team = Team()
-                team.create_team(all_players, generation)
+                team.create_team(all_players)
                 team.get_cost_value_score()
                 self.teams.append(team)
 
@@ -111,7 +108,6 @@ class Population:
                 swap = copy.deepcopy(self.teams[i].goalkeepers[goalie_index[0]])
                 self.teams[i].goalkeepers[goalie_index[0]] = self.teams[i-1].goalkeepers[goalie_index[0]]
                 self.teams[i-1].goalkeepers[goalie_index[0]] = swap
-                self.teams[i].update_ids()
             
             for x in def_index:
                 if self.teams[i].defenders[x]["id"] not in self.teams[i-1].def_ids and self.teams[i-1].defenders[x]["id"] not in self.teams[i].def_ids:
@@ -191,7 +187,6 @@ def read_files():
     all_players = []
     for i in range(len(csv_file_locs)):
         with open(csv_file_locs[i], newline='') as csvfile:
-            dict_length = 0
             reader = csv.DictReader(csvfile)
             players = []
             for index, row in enumerate(reader):
@@ -205,22 +200,13 @@ def read_files():
             all_players.append(players)
     return all_players
 
-def random_numbers(num_range, amount):
-    numbers = random.sample(range(num_range), amount)
-    to_set = set(numbers)
-    if len(to_set) < len(numbers):
-        random_numbers(amount, range)
-    return numbers
-
 all_players = read_files()
 
 population = Population(1000)
-generation = 0
 top_score = 0
 
 for i in range(1000):
-    generation += 1
-    population.fill_population(all_players, generation)
+    population.fill_population(all_players)
     population.mutate(all_players)
     population.mate()
     population.kill()
